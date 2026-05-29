@@ -24,10 +24,9 @@ app.use(cors());
 
 app.use(clerkMiddleware());
 
-app.get("/health",(req,res)=>{
-   res.json({ok:true});
-
-})
+app.get("/health", (_, res) => {
+  res.json({ ok: true });
+});
 
 
 const publicDir = path.join(process.cwd(), "public");
