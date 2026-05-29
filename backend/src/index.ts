@@ -7,13 +7,14 @@ import "dotenv/config"
 import fs from "node:fs";
 import path from "node:path";
 import keepAliveCorn from "./lib/cron"
-
+import * as Sentry from "@sentry/node";
 import { polarWebhookHandler } from "./webhooks/polar";
 
  import productRouter from "./routes/productRouter";
  import meRouter from "./routes/meRouter";
  import streamRouter from "./routes/streamRouter";
 import chekoutRouter from "./routes/chekoutRouter";
+import { sentryClerkUserMiddleware } from "./middleware/sentryClerkUser";
 // import adminRouter from "./routes/adminRouter";
 // import orderRouter from "./routes/orderRouter";
 
@@ -39,6 +40,8 @@ app.use(express.json())
 app.use(cors());
 
 app.use(clerkMiddleware());
+app.use(sentryClerkUserMiddleware);
+
 
 app.get("/health", (_, res) => {
   res.json({ ok: true });
@@ -72,6 +75,16 @@ if (fs.existsSync(publicDir)) {
   });
 }
 
+Sentry.setupExpressErrorHandler(app);
+
+app.use((_err:unknown,_req:express.Request,res:express.Response,_next:express.NextFunction)=>{
+  const sentryId=(res as express.Response & {sentry?:string}).sentry
+
+  res.status(500).json({
+    error:"Internal server error",
+    ...(sentryId!==undefined && {sentryId}),
+  });
+})
 
 app.listen(env.PORT,()=>{
   console.log("Listening on port 3001",env.PORT)
