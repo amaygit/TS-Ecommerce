@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/react";
 import * as Sentry from "@sentry/react";
 
 export function SentryUserSync() {

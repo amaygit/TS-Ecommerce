@@ -1,28 +1,27 @@
 import {
+  Show,
   SignInButton,
   SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
   useAuth,
-} from "@clerk/clerk-react";
+  UserButton,
+} from "@clerk/react";
 import PageLoader from "./components/PageLoader.jsx";
 import Layout from "./components/Layout.jsx";
 function App() {
-  const {isLoaded} = useAuth()
-  if(!isLoaded)    return <PageLoader/>
-  
+  const { isLoaded } = useAuth();
+  if (!isLoaded) return <PageLoader />;
+
   return (
     <Layout>
       <header>
-        <SignedOut>
+        <Show when="signed-out">
           <SignInButton mode="modal" />
           <SignUpButton mode="modal" />
-        </SignedOut>
+        </Show>
 
-        <SignedIn>
+        <Show when="signed-in">
           <UserButton />
-        </SignedIn>
+        </Show>
       </header>
       <button className="btn btn-primary">Click me</button>
     </Layout>
